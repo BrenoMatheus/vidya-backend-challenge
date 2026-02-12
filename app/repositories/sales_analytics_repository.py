@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import func
-from app.models.sale import Sale
+from app.models.sale_sql import Sale
 
 
 class SalesAnalyticsRepository:

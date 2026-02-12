@@ -3,6 +3,8 @@ from sqlalchemy.orm import sessionmaker
 from app.core.config import settings
 from pymongo import MongoClient
 
+# ---------- PostgreSQL ----------
+
 DATABASE_URL = (
     f"postgresql://{settings.POSTGRES_USER}:"
     f"{settings.POSTGRES_PASSWORD}@"
@@ -13,6 +15,15 @@ DATABASE_URL = (
 
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+# ---------- MongoDB ----------
 
 mongo_client = MongoClient(settings.MONGO_URI)
 mongo_db = mongo_client[settings.MONGO_DB]
