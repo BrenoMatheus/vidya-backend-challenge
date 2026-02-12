@@ -1,4 +1,5 @@
 from bson import ObjectId
+from datetime import datetime
 
 
 class TextRepository:
@@ -26,3 +27,10 @@ class TextRepository:
         )
 
         return [self._normalize(doc) for doc in cursor]
+    
+    def create(self, data: dict) -> dict:
+        data["created_at"] = datetime.utcnow()
+        result = self.collection.insert_one(data)
+
+        created = self.collection.find_one({"_id": result.inserted_id})
+        return self._normalize(created)

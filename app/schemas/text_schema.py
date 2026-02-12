@@ -16,6 +16,7 @@ class TextSearchSchema(BaseModel):
 
 
 class TextResponseSchema(BaseModel):
+    id: str
     sale_id: int
     type: str
     text: str
