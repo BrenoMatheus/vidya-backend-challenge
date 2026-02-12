@@ -21,7 +21,12 @@ class TextRepository:
 
         cursor = self.collection.find(
             query,
-            {"score": {"$meta": "textScore"}}
+            {
+                "sale_id": 1,
+                "type": 1,
+                "content": 1,
+                "score": {"$meta": "textScore"}
+            }
         ).sort(
             [("score", {"$meta": "textScore"})]
         )
