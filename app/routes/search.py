@@ -12,6 +12,8 @@ router = APIRouter(prefix="/search", tags=["Search"])
 @router.post("/")
 def search_texts(
     payload: TextSearchSchema,
+    page: int = 1,
+    limit: int = 10,
     mongo: Database = Depends(get_mongo_db),
 ):
     repository = TextRepository(mongo.sale_texts)
@@ -20,5 +22,7 @@ def search_texts(
     return service.search_texts(
         text=payload.text,
         sale_id=payload.sale_id,
-        type=payload.type
+        type=payload.type,
+        page=page,
+        limit=limit,
     )

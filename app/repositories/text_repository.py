@@ -10,28 +10,43 @@ class TextRepository:
         doc["id"] = str(doc.pop("_id"))
         return doc
 
-    def search(self, text: str, sale_id=None, type=None):
-        query = {"$text": {"$search": text}}
+    def search(
+            self,
+            text: str,
+            sale_id=None,
+            type=None,
+            page: int = 1,
+            limit: int = 10,
+        ):
+            query = {"$text": {"$search": text}}
 
-        if sale_id is not None:
-            query["sale_id"] = sale_id
+            if sale_id is not None:
+                query["sale_id"] = sale_id
 
-        if type is not None:
-            query["type"] = type
+            if type is not None:
+                query["type"] = type
 
-        cursor = self.collection.find(
-            query,
-            {
-                "sale_id": 1,
-                "type": 1,
-                "content": 1,
-                "score": {"$meta": "textScore"}
+            skip = (page - 1) * limit
+
+            cursor = (
+                self.collection
+                .find(query, {"score": {"$meta": "textScore"}})
+                .sort([("score", {"$meta": "textScore"})])
+                .skip(skip)
+                .limit(limit)
+            )
+
+            total = self.collection.count_documents(query)
+
+            return {
+                "items": [self._normalize(doc) for doc in cursor],
+                "meta": {
+                    "page": page,
+                    "limit": limit,
+                    "total": total,
+                    "pages": (total + limit - 1) // limit,
+                },
             }
-        ).sort(
-            [("score", {"$meta": "textScore"})]
-        )
-
-        return [self._normalize(doc) for doc in cursor]
     
     def create(self, data: dict) -> dict:
         data["created_at"] = datetime.utcnow()

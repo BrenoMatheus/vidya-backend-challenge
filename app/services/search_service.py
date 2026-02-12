@@ -10,13 +10,17 @@ class SearchService:
         self,
         text: str,
         sale_id: int | None = None,
-        type: str | None = None
-    ) -> List[dict]:
-        if not text.strip():
-            raise ValueError("Texto de busca não pode ser vazio")
-
+        type: str | None = None,
+        page: int = 1,
+        limit: int = 10,
+    ):
+        page = max(page, 1)
+        limit = min(max(limit, 1), 50)
+       
         return self.repository.search(
             text=text,
             sale_id=sale_id,
-            type=type
+            type=type,
+            page=page,
+            limit=limit,
         )
