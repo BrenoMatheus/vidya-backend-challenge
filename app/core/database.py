@@ -16,3 +16,6 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 mongo_client = MongoClient(settings.MONGO_URI)
 mongo_db = mongo_client[settings.MONGO_DB]
+
+def get_mongo_db():
+    return mongo_db
