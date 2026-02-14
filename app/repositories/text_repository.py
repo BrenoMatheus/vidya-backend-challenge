@@ -11,42 +11,47 @@ class TextRepository:
         return doc
 
     def search(
-            self,
-            text: str,
-            sale_id=None,
-            type=None,
-            page: int = 1,
-            limit: int = 10,
-        ):
-            query = {"$text": {"$search": text}}
+        self,
+        text: str,
+        sale_id=None,
+        type=None,
+        page: int = 1,
+        limit: int = 10,
+    ):
+        query = {}
 
-            if sale_id is not None:
-                query["sale_id"] = sale_id
+        if text and text.strip():
+            query["$text"] = {"$search": text}
 
-            if type is not None:
-                query["type"] = type
+        if sale_id is not None:
+            query["sale_id"] = sale_id
 
-            skip = (page - 1) * limit
+        if type is not None:
+            query["type"] = type
 
-            cursor = (
-                self.collection
-                .find(query, {"score": {"$meta": "textScore"}})
-                .sort([("score", {"$meta": "textScore"})])
-                .skip(skip)
-                .limit(limit)
-            )
+        skip = (page - 1) * limit
 
-            total = self.collection.count_documents(query)
+        projection = {"score": {"$meta": "textScore"}} if "$text" in query else {}
 
-            return {
-                "items": [self._normalize(doc) for doc in cursor],
-                "meta": {
-                    "page": page,
-                    "limit": limit,
-                    "total": total,
-                    "pages": (total + limit - 1) // limit,
-                },
-            }
+        cursor = self.collection.find(query, projection)
+
+        # 🔥 só ordena se tiver busca textual
+        if "$text" in query:
+            cursor = cursor.sort([("score", {"$meta": "textScore"})])
+
+        cursor = cursor.skip(skip).limit(limit)
+
+        total = self.collection.count_documents(query)
+
+        return {
+            "items": [self._normalize(doc) for doc in cursor],
+            "meta": {
+                "page": page,
+                "limit": limit,
+                "total": total,
+                "pages": (total + limit - 1) // limit,
+            },
+        }
     
     def create(self, data: dict) -> dict:
         data["created_at"] = datetime.utcnow()
