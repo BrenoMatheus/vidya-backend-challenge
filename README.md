@@ -137,7 +137,17 @@ git clone https://github.com/BrenoMatheus/vidya-backend-challenge.git
 cd vidya-backend-challenge
 ```
 
-3. Subir a aplicação
+3. Configurar variáveis de ambiente
+
+O projeto utiliza variáveis de ambiente para configuração da aplicação e dos bancos de dados.
+
+Crie o arquivo `.env` a partir do template:
+
+```bash
+cp .env.example .env
+```
+
+4. Subir a aplicação
 ```bash
 docker-compose up --build
 ```
@@ -148,7 +158,7 @@ Isso irá subir:
     * PostgreSQL (5432)
     * MongoDB (27017)
 
-4. Comando para executar o seed
+5. Comando para executar o seed
 
 Com os containers já em execução, rode:
 
@@ -156,7 +166,7 @@ Com os containers já em execução, rode:
 docker exec -it sales_api python -m scripts.seed_data
 ```
 
-5. Acessar a documentação da API
+6. Acessar a documentação da API
 
 ```bash
 http://localhost:8000/docs
