@@ -13,9 +13,13 @@ class SaleRepository:
         self.db.refresh(sale)
         return sale
 
-    def list(self, start_date=None, end_date=None, category=None):
+    def list(self,sale_id=None, product_name=None, start_date=None, end_date=None, category=None):
         query = self.db.query(Sale)
 
+        if sale_id:
+            query = query.filter(Sale.id == sale_id)
+        if product_name:
+            query = query.filter(Sale.product_name.ilike(f"%{product_name}%"))
         if start_date:
             query = query.filter(Sale.sale_date >= start_date)
         if end_date:
@@ -24,6 +28,18 @@ class SaleRepository:
             query = query.filter(Sale.category == category)
 
         return query.all()
+    
+    def update(self, sale: Sale):
+        self.db.commit()
+        self.db.refresh(sale)
+        return sale
+
+    def delete(self, sale: Sale):
+        self.db.delete(sale)
+        self.db.commit()
+
+    def get_by_id(self, sale_id: int):
+        return self.db.query(Sale).filter(Sale.id == sale_id).first()
 
     def list_by_ids(
         self,

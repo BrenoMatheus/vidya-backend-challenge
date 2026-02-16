@@ -68,6 +68,88 @@ app/
 ├── main.py         # Bootstrap da aplicação
 
 ```
+
+## Endpoints da API
+
+A aplicação expõe endpoints REST organizados por contexto de domínio, seguindo o padrão de **routers** do FastAPI.
+
+### Health Check
+Responsável por verificar a disponibilidade da aplicação.
+
+- `GET /health`
+  - Retorna o status da API.
+
+---
+
+### Vendas (`/sales`)
+Gerenciamento completo de vendas e consultas flexíveis.
+
+- `POST /sales`
+  - Cria uma nova venda.
+
+- `GET /sales`
+  - Lista vendas com suporte a filtros opcionais:
+    - `id`
+    - `product_name`
+    - `category`
+    - `start_date`
+    - `end_date`
+
+  Exemplos:
+  - `/sales?id=1`
+  - `/sales?product_name=notebook`
+  - `/sales?category=Eletrônicos`
+  - `/sales?start_date=2026-01-01&end_date=2026-01-31`
+
+- `PUT /sales/{id}`
+  - Atualiza parcialmente os dados de uma venda existente.
+
+- `DELETE /sales/{id}`
+  - Remove uma venda pelo identificador.
+
+---
+
+### Textos de Vendas (`/texts`)
+Gerenciamento de textos livres associados às vendas.
+
+- `POST /texts`
+  - Associa um texto (comentário, descrição ou observação) a uma venda.
+
+---
+
+### Busca Integrada (`/search`)
+Busca textual integrada entre MongoDB e PostgreSQL.
+
+- `POST /search`
+  - Realiza busca Full-Text no MongoDB e retorna os registros de vendas correlacionados no PostgreSQL.
+  - Suporta filtros de domínio no corpo da requisição e paginação via query params.
+
+#### Campos do corpo da requisição (JSON)
+
+- `text` *(obrigatório)*  
+  Termo utilizado na busca textual.
+
+- `sale_id` *(opcional)*  
+  Restringe a busca a uma venda específica.
+
+- `type` *(opcional)*  
+  Tipo do texto associado à venda (ex: `comment`, `description`, `observation`).
+
+#### Parâmetros de query
+
+- `page` *(opcional, default: 1)*  
+  Página dos resultados.
+
+- `limit` *(opcional, default: 10)*  
+  Quantidade de itens por página.
+
+---
+
+### Analytics (`/analytics`)
+Endpoints analíticos simples para extração de métricas.
+
+- `GET /analytics/by-category`
+  - Retorna a quantidade vendida agrupada por categoria.
  
 ### Camadas e Responsabilidades
 
